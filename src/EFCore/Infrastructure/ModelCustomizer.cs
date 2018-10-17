@@ -61,7 +61,7 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure
         {
             foreach (var setInfo in Dependencies.SetFinder.FindSets(context))
             {
-                if (setInfo.IsQueryType)
+                if (setInfo.IsQueryType || setInfo.IsParameterizedQueryType)
                 {
                     modelBuilder.Query(setInfo.ClrType);
                 }

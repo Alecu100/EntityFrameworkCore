@@ -87,9 +87,9 @@ namespace Microsoft.EntityFrameworkCore
             public IReadOnlyList<DbSetProperty> FindSets(DbContext context)
                 => new[]
                 {
-                    new DbSetProperty("One", typeof(SetA), setter: null),
-                    new DbSetProperty("Two", typeof(SetB), setter: null),
-                    new DbSetProperty("Three", typeof(SetA), setter: null)
+                    new DbSetProperty("One", typeof(SetA), null, setter: null),
+                    new DbSetProperty("Two", typeof(SetB), null, setter: null),
+                    new DbSetProperty("Three", typeof(SetA), null, setter: null)
                 };
         }
 

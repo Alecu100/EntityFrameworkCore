@@ -12,12 +12,24 @@ namespace Microsoft.EntityFrameworkCore
     /// </summary>
     public class DbGenericParameter
     {
+        /// <summary>
+        /// The DbType that will be set on the resulting DbParameter
+        /// </summary>
         public DbType DbType { get; set; }
 
+        /// <summary>
+        /// Set if parameter can be null
+        /// </summary>
         public bool? IsNullable { get; set; }
 
+        /// <summary>
+        /// The name that will be set on the resulting DbParameter
+        /// </summary>
         public string ParameterName { get; set; }
 
+        /// <summary>
+        /// The value that will be set on the resulting DbParameter
+        /// </summary>
         public object Value { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
         private readonly IDbSetFinder _setFinder;
         private readonly IDbSetSource _setSource;
         private readonly IDbQuerySource _querySource;
+        private readonly IDbParameterizedQuerySource _parameterizedQuerySource;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -23,11 +24,13 @@ namespace Microsoft.EntityFrameworkCore.Internal
         public DbSetInitializer(
             [NotNull] IDbSetFinder setFinder,
             [NotNull] IDbSetSource setSource,
-            [NotNull] IDbQuerySource querySource)
+            [NotNull] IDbQuerySource querySource,
+            [NotNull] IDbParameterizedQuerySource parameterizedQuerySource)
         {
             _setFinder = setFinder;
             _setSource = setSource;
             _querySource = querySource;
+            _parameterizedQuerySource = parameterizedQuerySource;
         }
 
         /// <summary>
@@ -38,11 +41,15 @@ namespace Microsoft.EntityFrameworkCore.Internal
         {
             foreach (var setInfo in _setFinder.FindSets(context).Where(p => p.Setter != null))
             {
+                var valueToSet = setInfo.IsQueryType
+                    ? ((IDbQueryCache)context).GetOrAddQuery(_querySource, setInfo.ClrType)
+                    : setInfo.IsParameterizedQueryType
+                        ? ((IDbParameterizedQueryCache)context).GetOrAddParameterizedQuery(_parameterizedQuerySource, setInfo.ClrType, setInfo.ClrTypeParam)
+                        : ((IDbSetCache)context).GetOrAddSet(_setSource, setInfo.ClrType);
+
                 setInfo.Setter.SetClrValue(
                     context,
-                    setInfo.IsQueryType
-                        ? ((IDbQueryCache)context).GetOrAddQuery(_querySource, setInfo.ClrType)
-                        : ((IDbSetCache)context).GetOrAddSet(_setSource, setInfo.ClrType));
+                    valueToSet);
             }
         }
     }

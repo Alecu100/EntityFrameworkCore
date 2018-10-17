@@ -21,7 +21,7 @@ namespace Microsoft.EntityFrameworkCore
 
             var customServices = new ServiceCollection()
                 .AddSingleton<IDbSetInitializer>(
-                    new DbSetInitializer(setFinder, setSource, setSource));
+                    new DbSetInitializer(setFinder, setSource, setSource, setSource));
 
             var serviceProvider = InMemoryTestHelpers.Instance.CreateServiceProvider(customServices);
 
@@ -43,10 +43,10 @@ namespace Microsoft.EntityFrameworkCore
 
                 return new[]
                 {
-                    new DbSetProperty("One", typeof(string), setterFactory.Create(typeof(JustAContext).GetAnyProperty("One"))),
-                    new DbSetProperty("Two", typeof(object), setterFactory.Create(typeof(JustAContext).GetAnyProperty("Two"))),
-                    new DbSetProperty("Three", typeof(string), setterFactory.Create(typeof(JustAContext).GetAnyProperty("Three"))),
-                    new DbSetProperty("Four", typeof(string), null)
+                    new DbSetProperty("One", typeof(string), null, setterFactory.Create(typeof(JustAContext).GetAnyProperty("One"))),
+                    new DbSetProperty("Two", typeof(object), null, setterFactory.Create(typeof(JustAContext).GetAnyProperty("Two"))),
+                    new DbSetProperty("Three", typeof(string), null, setterFactory.Create(typeof(JustAContext).GetAnyProperty("Three"))),
+                    new DbSetProperty("Four", typeof(string), null, null)
                 };
             }
         }
