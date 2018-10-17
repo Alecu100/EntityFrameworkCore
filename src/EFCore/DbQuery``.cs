@@ -32,8 +32,8 @@ namespace Microsoft.EntityFrameworkCore
     /// </summary>
     /// <typeparam name="TQuery"> The type of view being operated on by this view. </typeparam>
     /// <typeparam name="TParam">
-    ///     The type which contains the filter parameters which will be included in the query to the database. Each field or property
-    ///     in an instance of this type will get a corresponding parameter in the result query. Using this instance you filter the results after
+    ///     The type which contains the filter parameters which will be included in the query to the database. Each public field or property
+    ///     in an instance of this type will get a corresponding parameter in the resulting query. Using this instance you filter the results after
     ///     you have instantiated the DbContext
     /// </typeparam>
     public abstract class DbQuery<TQuery, TParam> : IInfrastructure<IServiceProvider>
