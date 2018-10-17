@@ -21,12 +21,14 @@ namespace Microsoft.EntityFrameworkCore.Internal
             [NotNull] string name,
             [NotNull] Type clrType,
             [CanBeNull] IClrPropertySetter setter,
-            bool queryType = false)
+            bool queryType = false,
+            bool parameterizedQueryType = false)
         {
             Name = name;
             ClrType = clrType;
             Setter = setter;
             IsQueryType = queryType;
+            IsParameterizedQueryType = parameterizedQueryType;
         }
 
         /// <summary>
@@ -52,5 +54,11 @@ namespace Microsoft.EntityFrameworkCore.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public bool IsQueryType { get; }
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public bool IsParameterizedQueryType { get; }
     }
 }

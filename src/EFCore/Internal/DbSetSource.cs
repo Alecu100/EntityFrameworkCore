@@ -20,8 +20,14 @@ namespace Microsoft.EntityFrameworkCore.Internal
         private static readonly MethodInfo _genericCreateQuery
             = typeof(DbSetSource).GetTypeInfo().GetDeclaredMethod(nameof(CreateQueryFactory));
 
+        private static readonly MethodInfo _genericCreateParameterizedQuery
+            = typeof(DbSetSource).GetTypeInfo().GetDeclaredMethod(nameof(CreateParameterizedQueryFactory));
+
         private readonly ConcurrentDictionary<Type, Func<DbContext, object>> _cache
             = new ConcurrentDictionary<Type, Func<DbContext, object>>();
+
+        private readonly ConcurrentDictionary<Tuple<Type,Type>, Func<DbContext, object>> _cache2
+            = new ConcurrentDictionary<Tuple<Type, Type>, Func<DbContext, object>>();
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -35,13 +41,28 @@ namespace Microsoft.EntityFrameworkCore.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public virtual object CreateQuery(DbContext context, Type type)
-            => CreateCore(context, type, _genericCreateQuery);
+            => CreateCore(context, type, _genericCreateParameterizedQuery);
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public virtual object CreateParameterizedQuery(DbContext context, Type type, Type type2)
+            => CreateCore(context, type, type2, _genericCreateQuery);
 
         private object CreateCore(DbContext context, Type type, MethodInfo createMethod)
             => _cache.GetOrAdd(
                 type,
                 t => (Func<DbContext, object>)createMethod
                     .MakeGenericMethod(t)
+                    .Invoke(null, null))(context);
+
+
+        private object CreateCore(DbContext context, Type type,Type type2, MethodInfo createMethod)
+            => _cache2.GetOrAdd(
+                 new Tuple<Type, Type>(type, type2),
+                t => (Func<DbContext, object>)createMethod
+                    .MakeGenericMethod(t.Item1, t.Item2)
                     .Invoke(null, null))(context);
 
         [UsedImplicitly]
@@ -53,5 +74,11 @@ namespace Microsoft.EntityFrameworkCore.Internal
         private static Func<DbContext, DbQuery<TQuery>> CreateQueryFactory<TQuery>()
             where TQuery : class
             => c => new InternalDbQuery<TQuery>(c);
+
+
+        [UsedImplicitly]
+        private static Func<DbContext, DbQuery<TQuery, TParam>> CreateParameterizedQueryFactory<TQuery, TParam>()
+            where TQuery : class
+            => c => new InternalDbQuery<TQuery, TParam>(c);
     }
 }
