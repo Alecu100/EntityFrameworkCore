@@ -51,9 +51,11 @@ namespace Microsoft.EntityFrameworkCore
         IDbContextDependencies,
         IDbSetCache,
         IDbQueryCache,
+        IDbParameterizedQueryCache,
         IDbContextPoolable
     {
         private readonly IDictionary<Type, object> _sets = new Dictionary<Type, object>();
+        private readonly IDictionary<Tuple<Type, Type>, object> _sets2 = new Dictionary<Tuple<Type, Type>, object>();
         private readonly DbContextOptions _options;
 
         private IDbContextServices _contextServices;
@@ -221,6 +223,21 @@ namespace Microsoft.EntityFrameworkCore
             {
                 set = source.CreateQuery(this, type);
                 _sets[type] = set;
+            }
+
+            return set;
+        }
+
+        object IDbParameterizedQueryCache.GetOrAddParameterizedQuery(IDbParameterizedQuerySource source, Type type, Type paramType)
+        {
+            CheckDisposed();
+
+            var combinedTypes = new Tuple<Type, Type>(type, paramType);
+
+            if (!_sets2.TryGetValue(combinedTypes, out var set))
+            {
+                set = source.CreateParameterizedQuery(this, type, paramType);
+                _sets2[combinedTypes] = _sets2;
             }
 
             return set;

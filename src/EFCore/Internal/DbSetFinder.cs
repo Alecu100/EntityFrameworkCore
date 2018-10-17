@@ -43,9 +43,11 @@ namespace Microsoft.EntityFrameworkCore.Internal
                 .Select(
                     p => new DbSetProperty(
                         p.Name,
-                        p.PropertyType.GetTypeInfo().GenericTypeArguments.Single(),
+                        p.PropertyType.GetTypeInfo().GenericTypeArguments.First(),
+                        p.PropertyType.GetTypeInfo().GenericTypeArguments.Length == 2 ? p.PropertyType.GetTypeInfo().GenericTypeArguments[1] : null,
                         p.SetMethod == null ? null : factory.Create(p),
-                        p.PropertyType.GetGenericTypeDefinition() == typeof(DbQuery<>)))
+                        p.PropertyType.GetGenericTypeDefinition() == typeof(DbQuery<>),
+                        p.PropertyType.GetGenericTypeDefinition() == typeof(DbQuery<,>)))
                 .ToArray();
         }
     }
