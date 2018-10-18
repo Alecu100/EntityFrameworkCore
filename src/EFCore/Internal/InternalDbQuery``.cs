@@ -20,6 +20,8 @@ namespace Microsoft.EntityFrameworkCore.Internal
     {
         private readonly DbContext _context;
         private IEntityType _entityType;
+        private Type _entityClrType;
+        private Type _paramClrType;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -66,10 +68,44 @@ namespace Microsoft.EntityFrameworkCore.Internal
             }
         }
 
+        private Type EntityClrType
+        {
+            get
+            {
+                if (_entityClrType != null)
+                {
+                    return _entityClrType;
+                }
+
+                _entityClrType = typeof(TQuery);
+
+                return _entityClrType;
+            }
+        }
+
+        private Type ParamClrType
+        {
+            get
+            {
+                if (_paramClrType != null)
+                {
+                    return _paramClrType;
+                }
+
+                _paramClrType = typeof(TParam);
+
+                return _paramClrType;
+            }
+        }
+
         private void CheckState()
         {
             // ReSharper disable once AssignmentIsFullyDiscarded
             _ = EntityType;
+
+            _ = EntityClrType;
+
+            _ = ParamClrType;
         }
 
         /// <summary>
@@ -78,7 +114,37 @@ namespace Microsoft.EntityFrameworkCore.Internal
         /// </summary>
         public override IQueryable<TQuery> Get(TParam parameters)
         {
+            CheckState();
+
             return new EntityQueryable<TQuery>(_context.GetDependencies().QueryProvider);
+        }
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public override Type ElementType
+        {
+            get
+            {
+                CheckState();
+
+                return EntityClrType;
+            }
+        }
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public override Type ParameterType
+        {
+            get
+            {
+                CheckState();
+
+                return ParamClrType;
+            }
         }
 
         IServiceProvider IInfrastructure<IServiceProvider>.Instance
