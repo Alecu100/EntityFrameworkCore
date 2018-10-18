@@ -212,6 +212,7 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure
             TryAdd<IDbSetInitializer, DbSetInitializer>();
             TryAdd<IDbSetSource, DbSetSource>();
             TryAdd<IDbQuerySource, DbSetSource>();
+            TryAdd<IDbParameterizedQuerySource, DbSetSource>();
             TryAdd<IEntityFinderSource, EntityFinderSource>();
             TryAdd<IEntityMaterializerSource, EntityMaterializerSource>();
             TryAdd<ICoreConventionSetBuilder, CoreConventionSetBuilder>();
