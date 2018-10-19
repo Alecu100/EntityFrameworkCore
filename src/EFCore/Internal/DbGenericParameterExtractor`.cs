@@ -45,7 +45,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
 
             foreach (var targetField in targetFields)
             {
-                CreateFuncForParamMember(paramType, targetField, dbGenericParamConstructorInfo, dbGenericParamNamePropInfo, dbGenericParamValuePropInfo);
+                CreateFuncExtractorForParamMember(paramType, targetField, dbGenericParamConstructorInfo, dbGenericParamNamePropInfo, dbGenericParamValuePropInfo);
             }
 
             var targetProperties = paramType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
@@ -54,12 +54,12 @@ namespace Microsoft.EntityFrameworkCore.Internal
             {
                 if (targetProperty.GetMethod != null)
                 {
-                    CreateFuncForParamMember(paramType, targetProperty, dbGenericParamConstructorInfo, dbGenericParamNamePropInfo, dbGenericParamValuePropInfo);
+                    CreateFuncExtractorForParamMember(paramType, targetProperty, dbGenericParamConstructorInfo, dbGenericParamNamePropInfo, dbGenericParamValuePropInfo);
                 }
             }
         }
 
-        private void CreateFuncForParamMember(Type paramType, MemberInfo targetField, ConstructorInfo dbGenericParamConstructorInfo, MemberInfo dbGenericParamNamePropInfo, MemberInfo dbGenericParamValuePropInfo)
+        private void CreateFuncExtractorForParamMember(Type paramType, MemberInfo targetField, ConstructorInfo dbGenericParamConstructorInfo, MemberInfo dbGenericParamNamePropInfo, MemberInfo dbGenericParamValuePropInfo)
         {
             var paramExpression = Expression.Parameter(paramType, "param");
 
