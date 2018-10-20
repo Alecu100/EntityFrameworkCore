@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
@@ -152,5 +153,18 @@ namespace Microsoft.EntityFrameworkCore.Metadata
         /// </summary>
         /// <returns> The service properties defined on this entity. </returns>
         IEnumerable<IServiceProperty> GetServiceProperties();
+
+        /// <summary>
+        /// Gets the list of parameterized LINQ based queries used as parameterized sources for queries of this type
+        /// </summary>
+        /// <returns>The parameterized queries</returns>
+        IEnumerable<IParameterizedQuery> GetDefiningParameterizedQueries();
+
+        /// <summary>
+        /// Gets a parameterized query that has a parameter of the supplied type
+        /// </summary>
+        /// <param name="parameterType">The type of the parameter for the query</param>
+        /// <returns>The parameterized query</returns>
+        IParameterizedQuery FindParameterizedQuery([NotNull] Type parameterType);
     }
 }

@@ -253,5 +253,36 @@ namespace Microsoft.EntityFrameworkCore.Metadata
         /// <param name="name"> The name of the property to remove. </param>
         /// <returns> The property that was removed. </returns>
         IMutableServiceProperty RemoveServiceProperty([NotNull] string name);
+
+        /// <summary>
+        ///     Adds a parameterized query to the query type.
+        /// </summary>
+        /// <param name="parameterType">The type of the parameter used with the parameterized query</param>
+        /// <param name="lambdaExpression">The expression used for queries</param>
+        /// <returns>The parameterized query that was added</returns>
+        IMutableParameterizedQuery AddParameterizedQuery([NotNull] Type parameterType, [NotNull] LambdaExpression lambdaExpression);
+
+        /// <summary>
+        ///     Gets the <see cref="IMutableParameterizedQuery" /> with a give parameter type. Returns null if no parameterized query with that
+        ///     parameter type is found.
+        /// </summary>
+        /// <param name="parameterType"> The type of the parameter of the parameterized query. </param>
+        /// <returns>The parameterized query</returns>
+        new IMutableParameterizedQuery FindParameterizedQuery([NotNull] Type parameterType);
+
+        /// <summary>
+        ///     Removes a parameterized query from this query type
+        /// </summary>
+        /// <param name="parameterType">The parameter type associated with the query to be removed. </param>
+        /// <returns>The removed parameterized query. </returns>
+        IMutableParameterizedQuery RemoveParameterizedQuery([NotNull] Type parameterType);
+
+        /// <summary>
+        ///     <para>
+        ///         Gets all the <see cref="IMutableParameterizedQuery" /> defined on this entity.
+        ///     </para>
+        /// </summary>
+        /// <returns> The service properties defined on this entity. </returns>
+        new IEnumerable<IMutableParameterizedQuery> GetDefiningParameterizedQueries();
     }
 }

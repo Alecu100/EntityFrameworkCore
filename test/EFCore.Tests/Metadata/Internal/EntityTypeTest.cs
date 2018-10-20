@@ -113,6 +113,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
             public IEnumerable<IProperty> GetProperties() => throw new NotImplementedException();
             public IServiceProperty FindServiceProperty(string name) => throw new NotImplementedException();
             public IEnumerable<IServiceProperty> GetServiceProperties() => throw new NotImplementedException();
+            public IEnumerable<IParameterizedQuery> GetDefiningParameterizedQueries() => throw new NotImplementedException();
+            public IParameterizedQuery FindParameterizedQuery(Type parameterType) => throw new NotImplementedException();
             public IEnumerable<IDictionary<string, object>> GetSeedData() => throw new NotImplementedException();
         }
 

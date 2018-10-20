@@ -43,12 +43,11 @@ namespace Microsoft.EntityFrameworkCore
         ///     Creates a query with the specified parameters that will fetch the queriable types from the database filtering them
         ///     based on the provided parameters
         /// </summary>
-        /// <param name="parameters">
-        ///     The parameters which are public fields or properties of an object which will get mapped to DbParam having their
-        ///     names given by the corresponding field or property name.
+        /// <param name="parameter">
+        ///     A parameter passed to the query when fetching it used to contain additional information for filtering the data used in the query.
         /// </param>
         /// <returns>The resulting query.</returns>
-        public virtual IQueryable<TQuery> Get(TParam parameters) => throw new NotImplementedException();
+        public virtual IQueryable<TQuery> GetQuery(TParam parameter) => throw new NotImplementedException();
 
         /// <summary>
         ///     Gets the type of the queryable entity associated with the parameterized query

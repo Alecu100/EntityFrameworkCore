@@ -39,6 +39,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         private readonly SortedDictionary<IReadOnlyList<IProperty>, Key> _keys
             = new SortedDictionary<IReadOnlyList<IProperty>, Key>(PropertyListComparer.Instance);
 
+        private readonly SortedSet<ParameterizedQuery> _parameterizedQueries = new SortedSet<ParameterizedQuery>();
+
         private List<object> _data;
 
         private readonly SortedDictionary<string, ServiceProperty> _serviceProperties
@@ -1986,6 +1988,46 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
                 : RemoveServiceProperty(property);
         }
 
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public IMutableParameterizedQuery AddParameterizedQuery(Type parameterType, LambdaExpression lambdaExpression)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public IEnumerable<IMutableParameterizedQuery> GetDefiningParameterizedQueries()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public IMutableParameterizedQuery FindParameterizedQuery(Type parameterType)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public IMutableParameterizedQuery RemoveParameterizedQuery(Type parameterType)
+        {
+            throw new NotImplementedException();
+        }
+
         private ServiceProperty RemoveServiceProperty(ServiceProperty property)
         {
             _serviceProperties.Remove(property.Name);
@@ -2146,6 +2188,15 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         {
             [DebuggerStepThrough]
             get => _baseType;
+        }
+        IEnumerable<IParameterizedQuery> IEntityType.GetDefiningParameterizedQueries()
+        {
+            return GetDefiningParameterizedQueries();
+        }
+
+        IParameterizedQuery IEntityType.FindParameterizedQuery(Type parameterType)
+        {
+            return FindParameterizedQuery(parameterType);
         }
 
         IMutableEntityType IMutableEntityType.BaseType

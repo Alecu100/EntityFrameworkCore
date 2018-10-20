@@ -129,6 +129,20 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         }
 
         /// <summary>
+        ///     Configures a query used to provide data for a query type.
+        /// </summary>
+        /// <param name="parameterizedQuery"> The query that will provide the underlying data for the query type. </param>
+        /// <returns> The same builder instance so that multiple calls can be chained. </returns>
+        public virtual QueryTypeBuilder<TQuery> ToQuery<TParam>([NotNull] Expression<Func<TParam, IQueryable<TQuery>>> parameterizedQuery)
+        {
+            Check.NotNull(parameterizedQuery, nameof(parameterizedQuery));
+
+            Builder.HasDefiningQuery(parameterizedQuery);
+
+            return this;
+        }
+
+        /// <summary>
         ///     <para>
         ///         Configures a relationship where this query type has a reference that points
         ///         to a single instance of the other type in the relationship.
