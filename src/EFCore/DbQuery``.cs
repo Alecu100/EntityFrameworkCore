@@ -45,7 +45,7 @@ namespace Microsoft.EntityFrameworkCore
         ///     multiple fields and properties, each of the used to filter the results dynamically after the context was initialized.
         /// </summary>
         /// <param name="parameter">
-        ///     A parameter passed to the query when fetching it used to contain additional information for filtering the data used in the query.
+        ///     A parameter passed to the query when fetching it that contains additional information for filtering the data provided by the query.
         /// </param>
         /// <returns>The resulting query.</returns>
         public virtual IQueryable<TQuery> GetQuery(TParam parameter) => throw new NotImplementedException();
