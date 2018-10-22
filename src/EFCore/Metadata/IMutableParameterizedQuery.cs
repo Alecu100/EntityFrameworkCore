@@ -9,11 +9,11 @@ namespace Microsoft.EntityFrameworkCore.Metadata
     /// <summary>
     ///     <para>
     ///         Represents a parameterized query for which a parameter object can be provided to the query to filter the data
-    ///         that is fetched dynamically
+    ///         dynamically after creation of the DbContext.
     ///     </para>
     ///     <para>
     ///         This interface is used during model creation and allows the metadata to be modified.
-    ///         Once the model is built, <see cref="IForeignKey" /> represents a ready-only view of the same metadata.
+    ///         Once the model is built, <see cref="IParameterizedQuery" /> represents a ready-only view of the same metadata.
     ///     </para>
     /// </summary>
     public interface IMutableParameterizedQuery : IParameterizedQuery
