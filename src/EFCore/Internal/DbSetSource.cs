@@ -41,14 +41,14 @@ namespace Microsoft.EntityFrameworkCore.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public virtual object CreateQuery(DbContext context, Type type)
-            => CreateCore(context, type, _genericCreateParameterizedQuery);
+            => CreateCore(context, type, _genericCreateQuery);
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public virtual object CreateParameterizedQuery(DbContext context, Type type, Type type2)
-            => CreateCore(context, type, type2, _genericCreateQuery);
+            => CreateCore(context, type, type2, _genericCreateParameterizedQuery);
 
         private object CreateCore(DbContext context, Type type, MethodInfo createMethod)
             => _cache.GetOrAdd(
@@ -57,10 +57,9 @@ namespace Microsoft.EntityFrameworkCore.Internal
                     .MakeGenericMethod(t)
                     .Invoke(null, null))(context);
 
-
-        private object CreateCore(DbContext context, Type type,Type type2, MethodInfo createMethod)
+        private object CreateCore(DbContext context, Type type, Type type2, MethodInfo createMethod)
             => _cache2.GetOrAdd(
-                 new Tuple<Type, Type>(type, type2),
+                new Tuple<Type, Type>(type, type2),
                 t => (Func<DbContext, object>)createMethod
                     .MakeGenericMethod(t.Item1, t.Item2)
                     .Invoke(null, null))(context);
