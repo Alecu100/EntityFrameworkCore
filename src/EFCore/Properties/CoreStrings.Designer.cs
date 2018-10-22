@@ -2805,7 +2805,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
         public static string ParameterizedQueryAlreadyAssignedForType([CanBeNull] Type parameterType)
             => string.Format(
                 GetString("ParameterizedQueryAlreadyAssignedForType", nameof(parameterType)),
-                parameterType);
+                parameterType.FullName);
 
         private static string GetString(string name, params string[] formatterNames)
         {

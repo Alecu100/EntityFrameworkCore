@@ -22,7 +22,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
         Type ParameterType { get; }
 
         /// <summary>
-        ///     Represents the actual query that will get executed to return data for the query type using the provided parameter
+        ///     Represents the actual query that will get executed to return data for the query type using the provided parameter.
         /// </summary>
         LambdaExpression Query { get; }
     }
