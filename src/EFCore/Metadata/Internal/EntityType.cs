@@ -39,7 +39,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         private readonly SortedDictionary<IReadOnlyList<IProperty>, Key> _keys
             = new SortedDictionary<IReadOnlyList<IProperty>, Key>(PropertyListComparer.Instance);
 
-        private readonly SortedSet<ParameterizedQuery> _parameterizedQueries = new SortedSet<ParameterizedQuery>();
+        private readonly SortedDictionary<Type, ParameterizedQuery> _parameterizedQueries =
+            new SortedDictionary<Type, ParameterizedQuery>();
 
         private List<object> _data;
 
@@ -1998,26 +1999,20 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
             throw new NotImplementedException();
         }
 
-
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IEnumerable<IMutableParameterizedQuery> GetDefiningParameterizedQueries()
-        {
-            throw new NotImplementedException();
-        }
-
+        public IEnumerable<IMutableParameterizedQuery> GetDefiningParameterizedQueries() => _parameterizedQueries.Values;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public IMutableParameterizedQuery FindParameterizedQuery(Type parameterType)
-        {
-            throw new NotImplementedException();
-        }
-
+            => _parameterizedQueries.TryGetValue(Check.NotNull(parameterType, nameof(parameterType)), out var parameterizedQuery)
+                ? parameterizedQuery
+                : null;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used

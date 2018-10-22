@@ -129,7 +129,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         }
 
         /// <summary>
-        ///     Configures a query used to provide data for a query type.
+        ///     Configures a query used to provide data for a query type using the specified parameter to filter results inside the query.
         /// </summary>
         /// <param name="parameterizedQuery"> The query that will provide the underlying data for the query type. </param>
         /// <returns> The same builder instance so that multiple calls can be chained. </returns>
@@ -137,7 +137,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         {
             Check.NotNull(parameterizedQuery, nameof(parameterizedQuery));
 
-            Builder.HasDefiningQuery(parameterizedQuery);
+            Builder.HasParameterizedQuery<TParam>(parameterizedQuery);
 
             return this;
         }
