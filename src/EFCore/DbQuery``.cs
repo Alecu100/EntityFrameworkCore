@@ -40,8 +40,9 @@ namespace Microsoft.EntityFrameworkCore
         where TQuery : class
     {
         /// <summary>
-        ///     Creates a query with the specified parameters that will fetch the queriable types from the database filtering them
-        ///     based on the provided parameters
+        ///     Creates a query that will fetch the queriable types from the database filtering them using the specified parameter. This parameter can
+        ///     contain
+        ///     multiple fields and properties, each of the used to filter the results dynamically after the context was initialized.
         /// </summary>
         /// <param name="parameter">
         ///     A parameter passed to the query when fetching it used to contain additional information for filtering the data used in the query.
@@ -55,7 +56,7 @@ namespace Microsoft.EntityFrameworkCore
         public virtual Type ElementType => throw new NotImplementedException();
 
         /// <summary>
-        ///     Gets the type of the parameters source used to apply dynamic filters when fetching the queryable type
+        ///     Gets the type of the parameter used to apply dynamic filters when fetching the queryable type
         /// </summary>
         public virtual Type ParameterType => throw new NotImplementedException();
 
