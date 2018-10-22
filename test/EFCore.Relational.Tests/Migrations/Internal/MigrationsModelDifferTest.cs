@@ -6187,6 +6187,98 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
         }
 
         [Fact]
+        public void SeedData_binary_change()
+        {
+            Execute(
+                _ => { },
+                source => source.Entity(
+                    "EntityWithTwoProperties",
+                    x =>
+                    {
+                        x.Property<int>("Id");
+                        x.Property<byte[]>("Value1");
+                        x.HasData(
+                            new
+                            {
+                                Id = 42,
+                                Value1 = new byte[] { 2, 1 }
+                            });
+                    }),
+                target => target.Entity(
+                    "EntityWithTwoProperties",
+                    x =>
+                    {
+                        x.Property<int>("Id");
+                        x.Property<byte[]>("Value1");
+                        x.HasData(
+                            new
+                            {
+                                Id = 42,
+                                Value1 = new byte[] { 1, 2 }
+                            });
+                    }),
+                upOps => Assert.Collection(
+                    upOps,
+                    o =>
+                    {
+                        var m = Assert.IsType<UpdateDataOperation>(o);
+                        AssertMultidimensionalArray(
+                            m.KeyValues,
+                            v => Assert.Equal(42, v));
+                        AssertMultidimensionalArray(
+                            m.Values,
+                            v => Assert.Equal(new byte[] { 1, 2 }, v));
+                    }),
+                downOps => Assert.Collection(
+                    downOps,
+                    o =>
+                    {
+                        var m = Assert.IsType<UpdateDataOperation>(o);
+                        AssertMultidimensionalArray(
+                            m.KeyValues,
+                            v => Assert.Equal(42, v));
+                        AssertMultidimensionalArray(
+                            m.Values,
+                            v => Assert.Equal(new byte[] { 2, 1 }, v));
+                    }));
+        }
+
+        [Fact]
+        public void SeedData_binary_no_change()
+        {
+            Execute(
+                _ => { },
+                source => source.Entity(
+                    "EntityWithTwoProperties",
+                    x =>
+                    {
+                        x.Property<int>("Id");
+                        x.Property<byte[]>("Value1");
+                        x.HasData(
+                            new
+                            {
+                                Id = 42,
+                                Value1 = new byte[] { 1, 2 }
+                            });
+                    }),
+                target => target.Entity(
+                    "EntityWithTwoProperties",
+                    x =>
+                    {
+                        x.Property<int>("Id");
+                        x.Property<byte[]>("Value1");
+                        x.HasData(
+                            new
+                            {
+                                Id = 42,
+                                Value1 = new byte[] { 1, 2 }
+                            });
+                    }),
+                upOps => Assert.Empty(upOps),
+                downOps => Assert.Empty(downOps));
+        }
+
+        [Fact]
         public void SeedData_update_with_table_rename()
         {
             Execute(
@@ -7572,6 +7664,122 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
                     Assert.Equal("AddressBase", operation2.Table);
                     Assert.Equal("NotZip", operation2.Name);
                 });
+        }
+
+        [Fact]
+        public void Owner_pk_properties_appear_before_owned_pk_which_preserves_annotations()
+        {
+            Execute(
+                _ => { },
+                target => target.Entity<Customer13300>(builder =>
+                {
+                    builder.OwnsOne(
+                        o => o.Created,
+                        sa => sa.Property(p => p.Reason).HasMaxLength(255).IsUnicode(false));
+
+                    builder.Property(x => x.TenantId).IsRequired();
+                    builder.HasKey(x => new { x.TenantId, x.ProviderKey });
+                    builder.Property(x => x.ProviderKey).HasMaxLength(50).IsUnicode(false);
+                }),
+                operations =>
+                {
+                    var createTableOperation = Assert.IsType<CreateTableOperation>(Assert.Single(operations));
+
+                    Assert.Collection(createTableOperation.Columns,
+                        c =>
+                        {
+                            Assert.Equal("TenantId", c.Name);
+                            Assert.False(c.IsNullable);
+                        },
+                        c =>
+                        {
+                            Assert.Equal("ProviderKey", c.Name);
+                            Assert.Equal(50, c.MaxLength);
+                            Assert.False(c.IsUnicode);
+                        },
+                        c =>
+                        {
+                            Assert.Equal("Created_Reason", c.Name);
+                            Assert.Equal(255, c.MaxLength);
+                            Assert.False(c.IsUnicode);
+                        },
+                        c => Assert.Equal("DisplayName", c.Name)
+                        );
+                });
+        }
+
+        public class Customer13300 : ProviderTenantEntity13300
+        {
+            public string DisplayName { get; set; }
+        }
+
+        public abstract class ProviderTenantEntity13300 : TenantEntity13300
+        {
+            public string ProviderKey { get; set; }
+        }
+
+        public abstract class TenantEntity13300
+        {
+            public Guid TenantId { get; set; }
+            public ReferencePoint13300 Created { get; set; } = new ReferencePoint13300();
+        }
+
+        public class ReferencePoint13300
+        {
+            public string Reason { get; set; }
+        }
+
+        [Fact]
+        public void Primary_key_properties_are_sorted_first()
+        {
+            Execute(
+                _ => { },
+                target =>
+                {
+                    target.Entity<Principal>();
+                    target.Entity<Dependent>(b =>
+                    {
+                        b.Property<int>("ShadowPk");
+                        b.Property<int>("AnotherShadowProperty");
+                        b.HasKey("Id1", "Id2", "Id3", "ShadowPk");
+                    });
+                },
+                operations =>
+                {
+                    var dependentTableCreation
+                        = (CreateTableOperation)operations.Single(o => o is CreateTableOperation ct && ct.Name == "Dependent");
+
+                    Assert.Collection(
+                        dependentTableCreation.Columns,
+                        c => Assert.Equal("Id3", c.Name),
+                        c => Assert.Equal("Id2", c.Name),
+                        c => Assert.Equal("Id1", c.Name),
+                        c => Assert.Equal("ShadowPk", c.Name),
+                        c => Assert.Equal("RealFkNavigationId", c.Name),
+                        c => Assert.Equal("ShadowFkNavigationId", c.Name),
+                        c => Assert.Equal("Value", c.Name),
+                        c => Assert.Equal("AnotherShadowProperty", c.Name));
+                });
+        }
+
+        public abstract class Base
+        {
+            public int? RealFkNavigationId { get; set; }
+            public Principal ShadowFkNavigation { get; set; }
+            public Principal RealFkNavigation { get; set; }
+            public int Id3 { get; set; }
+        }
+
+        public class Dependent : Base
+        {
+            public int Id2 { get; set; }
+            public int Id1 { get; set; }
+            public string Value { get; set; }
+        }
+
+        public class Principal
+        {
+            public int Id { get; set; }
         }
 
         private class Blog

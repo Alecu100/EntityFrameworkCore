@@ -1313,7 +1313,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public virtual Navigation FindNavigation([NotNull] MemberInfo memberInfo)
-            => FindNavigation(Check.NotNull(memberInfo, nameof(memberInfo)).Name);
+            => FindNavigation(Check.NotNull(memberInfo, nameof(memberInfo)).GetSimpleMemberName());
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -1599,7 +1599,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
                 propertyType,
                 ClrType?.GetMembersInHierarchy(name).FirstOrDefault(),
                 configurationSource,
-                typeConfigurationSource);
+                typeConfigurationSource,
+                isIndexProperty: false);
         }
 
         /// <summary>
@@ -1624,7 +1625,37 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
                         memberInfo.Name, this.DisplayName(), memberInfo.DeclaringType?.ShortDisplayName()));
             }
 
-            return AddProperty(memberInfo.Name, memberInfo.GetMemberType(), memberInfo, configurationSource, configurationSource);
+            return AddProperty(
+                memberInfo.GetSimpleMemberName(),
+                memberInfo.GetMemberType(),
+                memberInfo,
+                configurationSource,
+                configurationSource,
+                isIndexProperty: false);
+        }
+
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public virtual Property AddIndexedProperty(
+            [NotNull] string name,
+            [NotNull] Type propertyType,
+            // ReSharper disable once MethodOverloadWithOptionalParameter
+            ConfigurationSource configurationSource = ConfigurationSource.Explicit,
+            ConfigurationSource? typeConfigurationSource = ConfigurationSource.Explicit)
+        {
+            Check.NotNull(name, nameof(name));
+            Check.NotNull(propertyType, nameof(propertyType));
+
+            return AddProperty(
+                name,
+                propertyType,
+                null,
+                configurationSource,
+                typeConfigurationSource,
+                isIndexProperty: true);
         }
 
         private Property AddProperty(
@@ -1632,7 +1663,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
             Type propertyType,
             MemberInfo memberInfo,
             ConfigurationSource configurationSource,
-            ConfigurationSource? typeConfigurationSource)
+            ConfigurationSource? typeConfigurationSource,
+            bool isIndexProperty)
         {
             var conflictingMember = FindMembersInHierarchy(name).FirstOrDefault();
             if (conflictingMember != null)
@@ -1669,7 +1701,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 
             var property = new Property(
                 name, propertyType, memberInfo as PropertyInfo, memberInfo as FieldInfo, this,
-                configurationSource, typeConfigurationSource);
+                configurationSource, typeConfigurationSource, isIndexProperty);
 
             _properties.Add(property.Name, property);
             PropertyMetadataChanged();
@@ -1696,7 +1728,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public virtual Property FindProperty([NotNull] PropertyInfo propertyInfo)
-            => FindProperty(propertyInfo.Name);
+            => FindProperty(propertyInfo.GetSimpleMemberName());
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -1885,7 +1917,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         {
             Check.NotNull(memberInfo, nameof(memberInfo));
 
-            var name = memberInfo.Name;
+            var name = memberInfo.GetSimpleMemberName();
 
             var duplicateMember = FindMembersInHierarchy(name).FirstOrDefault();
             if (duplicateMember != null)
@@ -1932,7 +1964,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public virtual Property FindServiceProperty([NotNull] MemberInfo memberInfo)
-            => FindProperty(memberInfo.Name);
+            => FindProperty(memberInfo.GetSimpleMemberName());
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -1973,7 +2005,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public virtual ServiceProperty GetOrAddServiceProperty([NotNull] MemberInfo memberInfo)
-            => FindServiceProperty(memberInfo.Name) ?? AddServiceProperty(memberInfo);
+            => FindServiceProperty(memberInfo.GetSimpleMemberName()) ?? AddServiceProperty(memberInfo);
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -2083,16 +2115,16 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
             }
 
             var data = new List<Dictionary<string, object>>();
-            var valueConverters = new Dictionary<string, ValueConverter>();
+            var valueConverters = new Dictionary<string, ValueConverter>(StringComparer.Ordinal);
             var properties = this.GetPropertiesAndNavigations().ToDictionary(p => p.Name);
             foreach (var rawSeed in _data)
             {
-                var seed = new Dictionary<string, object>();
+                var seed = new Dictionary<string, object>(StringComparer.Ordinal);
                 data.Add(seed);
                 var type = rawSeed.GetType();
                 foreach (var memberInfo in type.GetMembersInHierarchy())
                 {
-                    if (!properties.TryGetValue(memberInfo.Name, out var propertyBase))
+                    if (!properties.TryGetValue(memberInfo.GetSimpleMemberName(), out var propertyBase))
                     {
                         continue;
                     }
@@ -2269,6 +2301,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
             => RemoveIndex(properties);
 
         IMutableProperty IMutableEntityType.AddProperty(string name, Type propertyType) => AddProperty(name, propertyType);
+
+        IMutableProperty IMutableEntityType.AddIndexedProperty(string name, Type propertyType) => AddIndexedProperty(name, propertyType);
 
         [DebuggerStepThrough]
         IProperty IEntityType.FindProperty(string name) => FindProperty(name);
