@@ -283,6 +283,6 @@ namespace Microsoft.EntityFrameworkCore.Metadata
         ///     </para>
         /// </summary>
         /// <returns> The service properties defined on this entity. </returns>
-        new IEnumerable<IMutableParameterizedQuery> GetDefiningParameterizedQueries();
+        new IEnumerable<IMutableParameterizedQuery> GetParameterizedQueries();
     }
 }

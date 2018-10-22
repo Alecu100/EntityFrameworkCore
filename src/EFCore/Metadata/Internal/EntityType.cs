@@ -2003,7 +2003,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IEnumerable<IMutableParameterizedQuery> GetDefiningParameterizedQueries() => _parameterizedQueries.Values;
+        public IEnumerable<IMutableParameterizedQuery> GetParameterizedQueries() => _parameterizedQueries.Values;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -2184,9 +2184,9 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
             [DebuggerStepThrough]
             get => _baseType;
         }
-        IEnumerable<IParameterizedQuery> IEntityType.GetDefiningParameterizedQueries()
+        IEnumerable<IParameterizedQuery> IEntityType.GetParameterizedQueries()
         {
-            return GetDefiningParameterizedQueries();
+            return GetParameterizedQueries();
         }
 
         IParameterizedQuery IEntityType.FindParameterizedQuery(Type parameterType)

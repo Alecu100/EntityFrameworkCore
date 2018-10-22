@@ -158,7 +158,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
         /// Gets the list of parameterized LINQ based queries used as parameterized sources for queries of this type
         /// </summary>
         /// <returns>The parameterized queries</returns>
-        IEnumerable<IParameterizedQuery> GetDefiningParameterizedQueries();
+        IEnumerable<IParameterizedQuery> GetParameterizedQueries();
 
         /// <summary>
         /// Gets a parameterized query that has a parameter of the supplied type
