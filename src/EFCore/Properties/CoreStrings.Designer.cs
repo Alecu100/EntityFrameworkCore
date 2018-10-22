@@ -2799,6 +2799,14 @@ namespace Microsoft.EntityFrameworkCore.Internal
                 GetString("ConstructorBindingFailed", nameof(failedBinds), nameof(parameters)),
                 failedBinds, parameters);
 
+        /// <summary>
+        ///     A parameterized query is alread assigned for parameter of type '{parameterType}'.
+        /// </summary>
+        public static string ParameterizedQueryAlreadyAssignedForType([CanBeNull] Type parameterType)
+            => string.Format(
+                GetString("ParameterizedQueryAlreadyAssignedForType", nameof(parameterType)),
+                parameterType);
+
         private static string GetString(string name, params string[] formatterNames)
         {
             var value = _resourceManager.GetString(name);

@@ -2025,22 +2025,41 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IMutableParameterizedQuery AddParameterizedQuery(Type parameterType, LambdaExpression lambdaExpression)
+        public ParameterizedQuery AddParameterizedQuery(
+            [NotNull] Type parameterType,
+            [NotNull] LambdaExpression lambdaExpression,
+            // ReSharper disable once MethodOverloadWithOptionalParameter
+            ConfigurationSource configurationSource = ConfigurationSource.Explicit)
         {
-            throw new NotImplementedException();
+            Check.NotNull(parameterType, nameof(parameterType));
+            Check.NotNull(lambdaExpression, nameof(lambdaExpression));
+
+            var parameterizedQuery = FindParameterizedQuery(parameterType);
+
+            if (parameterizedQuery != null)
+            {
+                throw new InvalidOperationException(
+                    CoreStrings.ParameterizedQueryAlreadyAssignedForType(parameterType));
+            }
+
+            parameterizedQuery = new ParameterizedQuery(this, parameterType, lambdaExpression, configurationSource);
+
+            _parameterizedQueries.Add(parameterType, parameterizedQuery);
+
+            return parameterizedQuery;
         }
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IEnumerable<IMutableParameterizedQuery> GetParameterizedQueries() => _parameterizedQueries.Values;
+        public IEnumerable<ParameterizedQuery> GetParameterizedQueries() => _parameterizedQueries.Values;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IMutableParameterizedQuery FindParameterizedQuery(Type parameterType)
+        public ParameterizedQuery FindParameterizedQuery(Type parameterType)
             => _parameterizedQueries.TryGetValue(Check.NotNull(parameterType, nameof(parameterType)), out var parameterizedQuery)
                 ? parameterizedQuery
                 : null;
@@ -2215,15 +2234,6 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
             [DebuggerStepThrough]
             get => _baseType;
         }
-        IEnumerable<IParameterizedQuery> IEntityType.GetParameterizedQueries()
-        {
-            return GetParameterizedQueries();
-        }
-
-        IParameterizedQuery IEntityType.FindParameterizedQuery(Type parameterType)
-        {
-            return FindParameterizedQuery(parameterType);
-        }
 
         IMutableEntityType IMutableEntityType.BaseType
         {
@@ -2315,6 +2325,26 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 
         [DebuggerStepThrough]
         IEnumerable<IMutableProperty> IMutableEntityType.GetProperties() => GetProperties();
+
+        [DebuggerStepThrough]
+        IMutableParameterizedQuery IMutableEntityType.AddParameterizedQuery(Type parameterType, LambdaExpression lambdaExpression)
+            => AddParameterizedQuery(parameterType, lambdaExpression);
+
+        [DebuggerStepThrough]
+        IEnumerable<IParameterizedQuery> IEntityType.GetParameterizedQueries()
+            => GetParameterizedQueries();
+
+        [DebuggerStepThrough]
+        IEnumerable<IMutableParameterizedQuery> IMutableEntityType.GetParameterizedQueries()
+            => GetParameterizedQueries();
+
+        [DebuggerStepThrough]
+        IParameterizedQuery IEntityType.FindParameterizedQuery(Type parameterType)
+            => FindParameterizedQuery(parameterType);
+
+        [DebuggerStepThrough]
+        IMutableParameterizedQuery IMutableEntityType.FindParameterizedQuery(Type parameterType)
+            => FindParameterizedQuery(parameterType);
 
         IMutableProperty IMutableEntityType.RemoveProperty(string name) => RemoveProperty(name);
 

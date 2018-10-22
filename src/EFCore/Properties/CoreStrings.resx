@@ -1128,4 +1128,7 @@
   <data name="ConstructorBindingFailed" xml:space="preserve">
     <value>cannot bind '{failedBinds}' in '{parameters}'</value>
   </data>
+  <data name="ParameterizedQueryAlreadyAssignedForType" xml:space="preserve">
+    <value>A parameterized query is alread assigned for parameter of type '{parameterType}'.</value>
+  </data>
 </root>
