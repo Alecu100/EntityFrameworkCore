@@ -70,6 +70,19 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public Expression IntroduceParameterIntoParameterizedQuery(
+            object value,
+            LambdaExpression parameterizedQuery)
+        {
+            var visitor = new ParameterReplacerWithValueExpressionVisitor(parameterizedQuery.Parameters[index: 0], value);
+
+            return visitor.Visit(parameterizedQuery.Body);
+        }
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
         public virtual QueryModel ParseQuery(Expression query)
             => CreateQueryParser(_nodeTypeProvider).GetParsedQuery(query);
 
