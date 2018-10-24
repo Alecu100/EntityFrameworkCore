@@ -237,7 +237,7 @@ namespace Microsoft.EntityFrameworkCore
             if (!_sets2.TryGetValue(combinedTypes, out var set))
             {
                 set = source.CreateParameterizedQuery(this, type, paramType);
-                _sets2[combinedTypes] = _sets2;
+                _sets2[combinedTypes] = set;
             }
 
             return set;
