@@ -78,14 +78,24 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Query.ExpressionTranslators.In
             if (_methodToFunctionName.TryGetValue(method, out var functionName)
                 || (!isGeography && _geometryMethodToFunctionName.TryGetValue(method, out functionName)))
             {
+                var anyGeometryArguments = false;
                 var argumentTypeMappings = new RelationalTypeMapping[methodCallExpression.Arguments.Count];
                 for (var i = 0; i < methodCallExpression.Arguments.Count; i++)
                 {
                     var type = methodCallExpression.Arguments[i].Type;
                     if (typeof(IGeometry).IsAssignableFrom(type))
                     {
+                        anyGeometryArguments = true;
                         argumentTypeMappings[i] = _typeMappingSource.FindMapping(type, storeType);
                     }
+                    else
+                    {
+                        argumentTypeMappings[i] = _typeMappingSource.FindMapping(type);
+                    }
+                }
+                if (!anyGeometryArguments)
+                {
+                    argumentTypeMappings = null;
                 }
 
                 RelationalTypeMapping resultTypeMapping = null;
@@ -115,15 +125,17 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Query.ExpressionTranslators.In
             if (Equals(method, _isWithinDistance))
             {
                 return Expression.LessThanOrEqual(
-                    new SqlFunctionExpression(
-                        methodCallExpression.Object,
-                        "STDistance",
-                        typeof(double),
-                        Simplify(new[] { methodCallExpression.Arguments[0] }, isGeography),
-                        resultTypeMapping: null,
-                        _typeMappingSource.FindMapping(methodCallExpression.Object.Type, storeType),
-                        new[] { _typeMappingSource.FindMapping(typeof(IGeometry), storeType) }),
-                    methodCallExpression.Arguments[1]);
+                    Expression.Convert(
+                        new SqlFunctionExpression(
+                            methodCallExpression.Object,
+                            "STDistance",
+                            typeof(double),
+                            Simplify(new[] { methodCallExpression.Arguments[0] }, isGeography),
+                            resultTypeMapping: null,
+                            _typeMappingSource.FindMapping(methodCallExpression.Object.Type, storeType),
+                            new[] { _typeMappingSource.FindMapping(typeof(IGeometry), storeType) }),
+                        typeof(double?)),
+                    Expression.Convert(methodCallExpression.Arguments[1], typeof(double?)));
             }
 
             return null;
