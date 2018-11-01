@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
@@ -198,8 +197,6 @@ namespace Microsoft.EntityFrameworkCore
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
-                modelBuilder.Entity<Parent>();
-
                 modelBuilder
                     .Entity<NumNum>()
                     .Property(e => e.Id)
@@ -227,21 +224,6 @@ namespace Microsoft.EntityFrameworkCore
                     .Property(e => e.Id)
                     .HasColumnType("numeric(18, 0)");
             }
-        }
-        public class Parent
-        {
-            [Key()]
-            public Guid ParentGUID { get; set; }
-            public string SomeValue { get; set; }
-            [ForeignKey("ReferenceTypeGUID")]
-            public ReferenceType ReferenceTypeObject { get; set; }
-        }
-        public class ReferenceType
-        {
-            [Key()]
-            public Guid ReferenceTypeGUID { get; set; }
-            public string SomeOtherValue { get; set; }
-            public virtual ICollection<Parent> ParentGU { get; set; }
         }
 
         private class NownNum

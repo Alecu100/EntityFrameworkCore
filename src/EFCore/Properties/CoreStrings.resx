@@ -1141,4 +1141,7 @@
   <data name="InvalidQueryParamTypeEntity" xml:space="preserve">
     <value>Cannot create a parameterized DbQuery for '{entityType}' because there is no parameterized query defined for the entity type '{entityType}' with the parameter type '{paramType}'.</value>
   </data>
+  <data name="ConflictingForeignKeyAttributes" xml:space="preserve">
+    <value>There are multiple ForeignKeyAttributes which are pointing to same set of properties - '{propertyList}' on entity type '{entityType}'.</value>
+  </data>
 </root>
