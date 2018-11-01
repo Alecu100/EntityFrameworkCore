@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Utilities;
 
 namespace Microsoft.EntityFrameworkCore.Query.Internal
@@ -21,7 +22,8 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
         : IOrderedQueryable<TResult>,
           IAsyncEnumerable<TResult>,
           IDetachableContext,
-          IListSource
+          IListSource,
+          IParameterizableQueryable
     {
         private static readonly EntityQueryable<TResult> _detached
             = new EntityQueryable<TResult>(NullAsyncQueryProvider.Instance);
@@ -51,6 +53,20 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
             _queryProvider = queryProvider;
             Expression = expression;
+        }
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public EntityQueryable([NotNull] IAsyncQueryProvider queryProvider, [NotNull] IParameterizedQuery definingParameterizedQuery, [NotNull] object definingParameter)
+        {
+            Check.NotNull(queryProvider, nameof(queryProvider));
+            Check.NotNull(definingParameterizedQuery, nameof(definingParameterizedQuery));
+            Check.NotNull(definingParameter, nameof(definingParameter));
+
+            DefiningParameterizedQuery = definingParameterizedQuery;
+            DefiningParameter = definingParameter;
         }
 
         /// <summary>
@@ -112,5 +128,17 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         bool IListSource.ContainsListCollection => false;
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public IParameterizedQuery DefiningParameterizedQuery { get; }
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public object DefiningParameter { get; }
     }
 }

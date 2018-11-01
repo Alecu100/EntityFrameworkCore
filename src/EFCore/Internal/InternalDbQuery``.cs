@@ -20,6 +20,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
     {
         private readonly DbContext _context;
         private IEntityType _entityType;
+        private IParameterizedQuery _parameterizedQuery;
         private Type _entityClrType;
         private Type _paramClrType;
 
@@ -68,6 +69,26 @@ namespace Microsoft.EntityFrameworkCore.Internal
             }
         }
 
+        private IParameterizedQuery ParameterizedQuery
+        {
+            get
+            {
+                if (_parameterizedQuery != null)
+                {
+                    return _parameterizedQuery;
+                }
+
+                _parameterizedQuery = EntityType.FindParameterizedQuery(typeof(TParam));
+
+                if (_parameterizedQuery == null)
+                {
+                    throw new InvalidOperationException(CoreStrings.InvalidQueryParamTypeEntity(typeof(TQuery).ShortDisplayName(), typeof(TParam).ShortDisplayName()));
+                }
+
+                return _parameterizedQuery;
+            }
+        }
+
         private Type EntityClrType
         {
             get
@@ -103,6 +124,8 @@ namespace Microsoft.EntityFrameworkCore.Internal
             // ReSharper disable once AssignmentIsFullyDiscarded
             _ = EntityType;
 
+            _ = ParameterizedQuery;
+
             _ = EntityClrType;
 
             _ = ParamClrType;
@@ -112,11 +135,11 @@ namespace Microsoft.EntityFrameworkCore.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public override IQueryable<TQuery> GetQuery(TParam parameters)
+        public override IQueryable<TQuery> GetQuery(TParam parameter)
         {
             CheckState();
 
-            return new EntityQueryable<TQuery>(_context.GetDependencies().QueryProvider);
+            return new EntityQueryable<TQuery>(_context.GetDependencies().QueryProvider, _parameterizedQuery, parameter);
         }
 
         /// <summary>

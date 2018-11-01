@@ -2816,6 +2816,14 @@ namespace Microsoft.EntityFrameworkCore.Internal
                 key, queryType);
 
         /// <summary>
+        /// Cannot create a parameterized DbQuery for '{entityType}' because there is no parameterized query defined for the entity type '{entityType}' with the parameter type '{paramType}'.
+        /// </summary>
+        public static string InvalidQueryParamTypeEntity([NotNull] string entityType, [NotNull] string paramType) =>
+            string.Format(
+                GetString("InvalidQueryParamTypeEntity", nameof(entityType), nameof(paramType)),
+                entityType, paramType);
+
+        /// <summary>
         ///     The foreign key {redundantForeignKey} on entity type '{entityType} targets itself, it should be removed since it serves no purpuse.
         /// </summary>
         public static readonly EventDefinition<string, string> LogRedundantForeignKey

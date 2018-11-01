@@ -1138,4 +1138,7 @@
     <value>The foreign key {redundantForeignKey} on entity type '{entityType} targets itself, it should be removed since it serves no purpuse.</value>
     <comment>Warning CoreEventId.RedundantForeignKeyWarning string string</comment>
   </data>
+  <data name="InvalidQueryParamTypeEntity" xml:space="preserve">
+    <value>Cannot create a parameterized DbQuery for '{entityType}' because there is no parameterized query defined for the entity type '{entityType}' with the parameter type '{paramType}'.</value>
+  </data>
 </root>

@@ -295,6 +295,13 @@ namespace Microsoft.EntityFrameworkCore.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public static bool IsParameterizedQueryArgument([NotNull] this ConstantExpression constantExpression)
+            => constantExpression.Type == typeof(ParameterizedQueryArguments);
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
         public static IQuerySource TryGetReferencedQuerySource([NotNull] this Expression expression)
             => (expression as QuerySourceReferenceExpression)?.ReferencedQuerySource;
 
