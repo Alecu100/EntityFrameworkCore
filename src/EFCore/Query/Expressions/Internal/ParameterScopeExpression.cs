@@ -15,7 +15,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
         /// <summary>
         /// Used to add at the end of an extracted parameter name to denote the scope to which this parameter belongs to.
         /// </summary>
-        public const string ParameterScopeSuffix = "_param_sc";
+        public const string ParameterScopeSuffix = "_par_sc";
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
