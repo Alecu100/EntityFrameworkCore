@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 using Remotion.Linq;
@@ -92,6 +93,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
         {
             if (constantExpression.IsEntityQueryable())
             {
+                var parameterizableQueryable = (IParameterizableQueryable)constantExpression.Value;
                 var type = ((IQueryable)constantExpression.Value).ElementType;
                 var entityType = _queryCompilationContext.Model.FindEntityType(type)?.RootType();
 
@@ -106,9 +108,10 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                         var query = entityType.DefiningQuery;
 
                         if (query != null
-                            && _entityQueryModelVisitor.ShouldApplyDefiningQuery(entityType, _querySource))
+                            && _entityQueryModelVisitor.ShouldApplyDefiningQuery(entityType, _querySource)
+                            &&  parameterizableQueryable.DefiningParameterizedQuery == null)
                         {
-                            var parameterizedQuery
+                            var parameterizedDefiningQuery
                                 = _queryModelGenerator
                                     .ExtractParameters(
                                         _queryCompilationContext.Logger,
@@ -117,10 +120,31 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                                         parameterize: false,
                                         generateContextAccessors: true);
 
-                            var subQueryModel = _queryModelGenerator.ParseQuery(parameterizedQuery);
+                            var subQueryModel = _queryModelGenerator.ParseQuery(parameterizedDefiningQuery);
 
                             newExpression = new SubQueryExpression(subQueryModel);
                         }
+                    }
+
+                    if (parameterizableQueryable.DefiningParameterizedQuery != null
+                        && parameterizableQueryable.DefiningParameter != null)
+                    {
+                        var parameterizedQuery = parameterizableQueryable.DefiningParameterizedQuery.Query;
+
+                        var parsedParameterizedQuery
+                            = _queryModelGenerator
+                                .ExtractParameters(
+                                    _queryCompilationContext.Logger,
+                                    parameterizedQuery.Body,
+                                    _parameters,
+                                    parameterize: false,
+                                    generateContextAccessors: true);
+
+                        var scopedParameterizedQuery = new ParameterScopeExpression(parsedParameterizedQuery);
+
+                        var subQueryModel = _queryModelGenerator.ParseQuery(scopedParameterizedQuery);
+
+                        newExpression = new SubQueryExpression(subQueryModel);
                     }
 
                     if (!_queryCompilationContext.IgnoreQueryFilters

@@ -10,7 +10,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
     ///     Represents a scope used to contain parameters passed to a parameterized query
     ///     to distinquish between parameters of the same type or with the same names
     /// </summary>
-    public sealed class ParameterScopeExpression : Expression
+    public class ParameterScopeExpression : Expression
     {
         /// <summary>
         /// Used to add at the end of an extracted parameter name to denote the scope to which this parameter belongs to.

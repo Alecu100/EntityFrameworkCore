@@ -49,6 +49,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions
 
         private bool _isDistinct;
         private bool _isProjectStar;
+        private int? _parameterScopeIndex;
 
         /// <summary>
         ///     Creates a new instance of SelectExpression.
@@ -190,6 +191,16 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions
 
                 _isDistinct = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the parameter scope index used to fetch parameters in parameterized queries
+        /// </summary>
+        public virtual int? ParameterScopeIndex
+        {
+            get => _parameterScopeIndex;
+            [param: CanBeNull]
+            set => _parameterScopeIndex = value;
         }
 
         /// <summary>
@@ -397,7 +408,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions
         {
             var subquery = new SelectExpression(Dependencies, _queryCompilationContext, SubqueryAliasPrefix)
             {
-                IsProjectStar = IsProjectStar || _projection.Count == 0
+                IsProjectStar = IsProjectStar || _projection.Count == 0, ParameterScopeIndex = _parameterScopeIndex
             };
 
             var projectionsToAdd = IsProjectStar ? _starProjection : _projection;
