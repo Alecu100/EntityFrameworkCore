@@ -29,36 +29,60 @@ namespace Microsoft.EntityFrameworkCore.TestModels.RainbowsModel
         public static void WireUp(IReadOnlyList<Person> persons, IReadOnlyList<RainbowType> rainbowTypes, IReadOnlyList<Location> locations, IReadOnlyList<RainbowSighting> rainbowSightings)
         {
             rainbowSightings[0].Person = persons[3];
+            rainbowSightings[0].PersonId = persons[3].Id;
             rainbowSightings[0].Location = locations[1];
+            rainbowSightings[0].LocationId = locations[1].Id;
             rainbowSightings[0].RainbowType = rainbowTypes[0];
+            rainbowSightings[0].RainbowTypeId = rainbowTypes[0].Id;
 
             rainbowSightings[1].Person = persons[2];
+            rainbowSightings[1].PersonId = persons[2].Id;
             rainbowSightings[1].Location = locations[0];
+            rainbowSightings[1].LocationId = locations[0].Id;
             rainbowSightings[1].RainbowType = rainbowTypes[2];
+            rainbowSightings[1].RainbowTypeId = rainbowTypes[2].Id;
 
             rainbowSightings[2].Person = persons[0];
+            rainbowSightings[2].PersonId = persons[0].Id;
             rainbowSightings[2].Location = locations[2];
+            rainbowSightings[2].LocationId = locations[2].Id;
             rainbowSightings[2].RainbowType = rainbowTypes[3];
+            rainbowSightings[2].RainbowTypeId = rainbowTypes[3].Id;
 
             rainbowSightings[3].Person = persons[1];
+            rainbowSightings[3].PersonId = persons[1].Id;
             rainbowSightings[3].Location = locations[2];
+            rainbowSightings[3].LocationId = locations[2].Id;
             rainbowSightings[3].RainbowType = rainbowTypes[3];
+            rainbowSightings[3].RainbowTypeId = rainbowTypes[3].Id;
 
             rainbowSightings[4].Person = persons[0];
+            rainbowSightings[4].PersonId = persons[0].Id;
             rainbowSightings[4].Location = locations[1];
+            rainbowSightings[4].LocationId = locations[1].Id;
             rainbowSightings[4].RainbowType = rainbowTypes[2];
+            rainbowSightings[4].RainbowTypeId = rainbowTypes[2].Id;
 
             rainbowSightings[5].Person = persons[2];
+            rainbowSightings[5].PersonId = persons[2].Id;
             rainbowSightings[5].Location = locations[1];
+            rainbowSightings[5].LocationId = locations[1].Id;
             rainbowSightings[5].RainbowType = rainbowTypes[0];
+            rainbowSightings[5].RainbowTypeId = rainbowTypes[0].Id;
 
             rainbowSightings[6].Person = persons[0];
+            rainbowSightings[6].PersonId = persons[0].Id;
             rainbowSightings[6].Location = locations[2];
+            rainbowSightings[6].LocationId = locations[2].Id;
             rainbowSightings[6].RainbowType = rainbowTypes[1];
+            rainbowSightings[6].RainbowTypeId = rainbowTypes[1].Id;
 
             rainbowSightings[6].Person = persons[2];
+            rainbowSightings[6].PersonId = persons[2].Id;
             rainbowSightings[6].Location = locations[1];
+            rainbowSightings[6].LocationId = locations[1].Id;
             rainbowSightings[6].RainbowType = rainbowTypes[1];
+            rainbowSightings[6].RainbowTypeId = rainbowTypes[1].Id;
         }
 
         public IQueryable<TEntity> Set<TEntity>()
