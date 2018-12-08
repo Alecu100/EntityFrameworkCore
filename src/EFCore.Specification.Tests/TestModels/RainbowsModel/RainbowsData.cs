@@ -77,12 +77,12 @@ namespace Microsoft.EntityFrameworkCore.TestModels.RainbowsModel
             rainbowSightings[6].RainbowType = rainbowTypes[1];
             rainbowSightings[6].RainbowTypeId = rainbowTypes[1].Id;
 
-            rainbowSightings[6].Person = persons[2];
-            rainbowSightings[6].PersonId = persons[2].Id;
-            rainbowSightings[6].Location = locations[1];
-            rainbowSightings[6].LocationId = locations[1].Id;
-            rainbowSightings[6].RainbowType = rainbowTypes[1];
-            rainbowSightings[6].RainbowTypeId = rainbowTypes[1].Id;
+            rainbowSightings[7].Person = persons[2];
+            rainbowSightings[7].PersonId = persons[2].Id;
+            rainbowSightings[7].Location = locations[1];
+            rainbowSightings[7].LocationId = locations[1].Id;
+            rainbowSightings[7].RainbowType = rainbowTypes[1];
+            rainbowSightings[7].RainbowTypeId = rainbowTypes[1].Id;
         }
 
         public IQueryable<TEntity> Set<TEntity>()
